@@ -35,16 +35,6 @@ type ApprovalTask struct {
 	Version        int64              `json:"version"`
 }
 
-func (h ApprovalTask) PersistedExpiryStatus() ApprovalTaskStatus {
-	if h.Status == ApprovalTaskExpired {
-		return ApprovalTaskPending
-	}
-	if h.Status == "" {
-		return ApprovalTaskPending
-	}
-	return h.Status
-}
-
 func (h ApprovalTask) Validate() error {
 	if strings.TrimSpace(h.InferenceRunID) == "" || strings.TrimSpace(h.RequesterID) == "" || strings.TrimSpace(h.ReviewerID) == "" {
 		return FieldError{Field: "approval_task", Message: "run, requester and reviewer are required"}

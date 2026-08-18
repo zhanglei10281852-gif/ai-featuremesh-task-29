@@ -132,10 +132,9 @@ func (q *queries) ExpireApprovalTasks(ctx context.Context, now time.Time, limit 
 		if err := approval_task.Resolve(domain.ApprovalTaskExpired, "approval_task expired before acceptance", now); err != nil {
 			return nil, err
 		}
-		persistedStatus := approval_task.PersistedExpiryStatus()
-		result, err := q.q.ExecContext(ctx, `UPDATE approval_tasks SET status = ?, resolved_at = ?,
+		result, err := q.q.ExecContext(ctx, `UPDATE approval_tasks SET status = 'expired', resolved_at = ?,
             resolution_note = ?, version = version + 1, updated_at = ? WHERE id = ? AND version = ? AND status = 'pending'`,
-			persistedStatus, formatTime(now), approval_task.ResolutionNote, formatTime(now), approval_task.ID, expected)
+			formatTime(now), approval_task.ResolutionNote, formatTime(now), approval_task.ID, expected)
 		if err != nil {
 			return nil, translateError("expire approval_task", err)
 		}
